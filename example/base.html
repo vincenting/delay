@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Base example for delay</title>
+</head>
+<body>
+<div>
+    <button id="js:btn-stopDelay">Stop</button>
+</div>
+<div id="js:result">
+
+</div>
+<script src="../delay.js" type="text/javascript"></script>
+<script>
+    var resultDom = document.getElementById('js:result');
+    var write = function (text) {
+        resultDom.innerHTML += parseInt(Date.now() / 1000, 10) + ': ' + text + '</br>';
+    };
+
+    var delay = new Delay();
+    delay.add(2000, function () {
+        write('show after 2 second.')
+    });
+    var task_id_1 = delay.add(1000, function () {
+        write('show after 1 second.')
+    });
+    delay.add(2000, function () {
+        write('show after 2 second too.')
+    });
+    delay.add(4000, function () {
+        write('show after 4 second.')
+    });
+    delay.remove(task_id_1);
+    delay.run(function () {
+        write('all tasks finish!');
+    });
+    document.getElementById('js:btn-stopDelay').onclick = function () {
+        delay.destroy();
+        write('finish by stop');
+    };
+</script>
+</body>
+</html>
