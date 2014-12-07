@@ -2,7 +2,7 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>Base example for delay</title>
+    <title>Pause example for delay</title>
 </head>
 <body>
 <div>
@@ -23,16 +23,28 @@
     delay.add(2000, function () {
         write('show after 2 second.')
     });
-    var task_id_1 = delay.add(1000, function () {
-        write('show after 1 second.')
-    });
     delay.add(2000, function () {
         write('show after 2 second too.')
     });
     delay.add(4000, function () {
         write('show after 4 second.')
     });
-    delay.remove(task_id_1);
+    setTimeout(function () {
+        delay.pause();
+        write('pause');
+        setTimeout(function () {
+            write('continue');
+            delay.cont();
+            setTimeout(function () {
+                delay.pause();
+                write('pause');
+                setTimeout(function () {
+                    write('continue');
+                    delay.cont();
+                }, 3000);
+            }, 200);
+        }, 3000);
+    }, 1900);
     delay.run(function () {
         write('all tasks finish!');
     });

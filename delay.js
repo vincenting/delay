@@ -1,8 +1,19 @@
+// Delay by vincent Ting.
+// Open source with MIT.
+
 'use strict';
 !function (window) {
 
     var Delay = window.Delay = function () {
         this._init.apply(this, arguments);
+    };
+
+    var clearObject = function (o) {
+        for (var i in o) {
+            if (o.hasOwnProperty(i)) {
+                delete o[i];
+            }
+        }
     };
 
     var fn = Delay.prototype;
@@ -13,6 +24,8 @@
         this._delayMap = {};
         // index map for finding task by taskId.
         this._taskIdIndex = {};
+        this._paused = false;
+        this._lastingTime = 0;
     };
 
     // generate unique id
@@ -83,17 +96,23 @@
     fn._run = function () {
         var self = this;
         self._next = this.tasksQueue.shift();
+        this._lastStartTime = Date.now();
         if (!self._next) return this._cb.fn && this._cb.fn.call(this._cb.context || this);
         self._timeout = setTimeout(function () {
-            // run every tasks
-            for (var taskId in self._next.tasks) {
-                if (self._next.tasks.hasOwnProperty(taskId)) {
-                    self._next.tasks[taskId]();
-                }
-            }
-            self._pre = self._next;
-            return self._run();
+            return self._runNext();
         }, self._next.duration - self._pre.duration);
+    };
+
+    fn._runNext = function () {
+        // run every tasks
+        for (var taskId in this._next.tasks) {
+            if (this._next.tasks.hasOwnProperty(taskId)) {
+                this._next.tasks[taskId]();
+            }
+        }
+        this._lastingTime = this._next.duration;
+        this._pre = this._next;
+        return this._run();
     };
 
     // run delay queue.
@@ -114,17 +133,35 @@
 
     // pause a delay queue after run.
     fn.pause = function () {
-
+        this._startedNeeded('parse');
+        if (this._paused) return;
+        this._paused = true;
+        this._lastingTime -= this._lastStartTime - Date.now();
+        if (this._timeout) {
+            clearTimeout(this._timeout);
+            this._timeout = false;
+        }
     };
 
     // continue a delay if it has been paused.
     fn.cont = function () {
-
+        var self = this;
+        this._startedNeeded('cont');
+        if (!this._paused) return;
+        this._paused = false;
+        this._lastStartTime = Date.now();
+        this._timeout = setTimeout(function () {
+            return self._runNext();
+        }, this._next.duration - this._lastingTime);
     };
 
     // stop and destroy delay.
     fn.destroy = function () {
-        this._startedNeeded();
+        this._started = false;
+        this._paused = false;
+        this._lastingTime = 0;
+        clearObject(this._delayMap);
+        clearObject(this._taskIdIndex);
         if (this._timeout) {
             clearTimeout(this._timeout);
             this._timeout = false;
