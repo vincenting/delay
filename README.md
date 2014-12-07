@@ -30,9 +30,9 @@
 
 #### 2. 新建延时任务
 
-	var taskId = delay.add(1000, doSometing)
+	var taskId = delay.add(1000, doSomething[ ,context])
 	
-新建定时任务，这里就是 1秒后执行 doSometing，这里的 doSometing 可以是给某元素增加 class 或者 删除 class，返回任务 ID。
+新建定时任务，这里就是 1秒后执行 doSomething，context 为可选参数，为 doSomething 执行时的上下文，这里的 doSomething 可以是给某元素增加 class 或者 删除 class，返回任务 ID。
 
 #### 删除延时任务
 
@@ -54,7 +54,7 @@
 
 #### 继续执行
 
-	delay.conti();
+	delay.cont();
 	
 暂停后继续执行当前延时队列。
 

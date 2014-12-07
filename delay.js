@@ -47,7 +47,7 @@
     };
 
     // add task for delay queue.
-    fn.add = function (duration, task) {
+    fn.add = function (duration, task, context) {
         this._notStartedNeeded('add');
         var taskId;
         while (true) {
@@ -60,7 +60,7 @@
         if (!this._delayMap.hasOwnProperty(duration)) {
             this._delayMap[duration] = {};
         }
-        this._delayMap[duration][taskId] = task;
+        this._delayMap[duration][taskId] = {fn: task, context: context};
         return taskId;
     };
 
@@ -107,7 +107,8 @@
         // run every tasks
         for (var taskId in this._next.tasks) {
             if (this._next.tasks.hasOwnProperty(taskId)) {
-                this._next.tasks[taskId]();
+                var t = this._next.tasks[taskId];
+                t.fn.call(t.context || this);
             }
         }
         this._lastingTime = this._next.duration;
