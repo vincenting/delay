@@ -42,7 +42,7 @@
 
 #### 执行任务列表
 
-	delay.run(onAllTasksFinished, context);
+	delay.run(onAllTasksFinished[ ,context]);
 	
 执行延时任务，并设置完成回调。其中 context 参数可选，为当前回调函数的上下文，默认为 Delay 实例。
 

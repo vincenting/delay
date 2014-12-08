@@ -95,12 +95,12 @@
 
     var _run = function () {
         var self = this;
-        self._next = this.tasksQueue.shift();
+        this._next = this.tasksQueue.shift();
         this._lastStartTime = Date.now();
-        if (!self._next) return this._cb.fn && this._cb.fn.call(this._cb.context || this);
-        self._timeout = setTimeout(function () {
+        if (!this._next) return this._cb.fn && this._cb.fn.call(this._cb.context || this);
+        this._timeout = setTimeout(function () {
             return _runNext.call(self);
-        }, self._next.duration - self._pre.duration);
+        }, this._next.duration - this._pre.duration);
     };
 
     var _runNext = function () {
